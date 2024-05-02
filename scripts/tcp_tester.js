@@ -1,0 +1,27 @@
+const net = require('net');
+
+const client = net.createConnection("/tmp/myoga.claudit.sock");
+
+client.on("connect", function() {
+  client.write('ok.db');
+  setTimeout(() => {
+    const buf = Buffer.from([0x03, 0x01, 0x01, 0x01, 0xff, 0xf0, 0x00, 0x01, 0x00, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0f, 0x00]);
+    const altBuf = Buffer.alloc(131056, 69, 'hex');
+    client.write(buf);
+    client.write(altBuf);
+    setTimeout(newBatch.bind(this), 32);
+  }, 32);
+});
+
+function newBatch() {
+  console.log("write");
+  const nbuf = Buffer.from([0x02, 0x01, 0x01, 0x00, 0x01, 0x02, 0x00, 0x01, 0x00, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0f, 0x00]);
+  client.write(nbuf);
+};
+
+client.on("data", function(data) {
+  console.log(data, data.length);
+  setTimeout(() => {
+    client.end();
+  }, 32);
+});
