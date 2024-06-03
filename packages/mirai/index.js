@@ -287,7 +287,7 @@ const server = Bun.serve({
   tls: globalConfig.tls.value === 'yes' ? {
     cert: Bun.file(globalConfig.tls_cert.value),
     key: Bun.file(globalConfig.tls_key.value),
-    ca: [Bun.file(globalConfig.tls_ca.value)]
+    // ca: [Bun.file(globalConfig.tls_ca.value)]
   } : undefined,
   error(error) {
     return new CustomResponse(`<pre>${error.message}\n${error.stack}</pre>`, {
