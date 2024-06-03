@@ -247,8 +247,18 @@ const server = Bun.serve({
     const hash = `${ua}@${ip}`;
     const now = Math.round(new Date().getTime()/1000);
     if (!globalTokens[hash]?.xsrf || now - globalTokens[hash]?.time > 3600) {
-      // TODO: push to globalConfig.peerServers the new xsrf token for this fingerprint;
-      globalTokens[hash] = { xsrf: randomUUID(), time: now };
+      const token = randomUUID();
+      const list = JSON.parse(globalConfig.peerServers.value);
+      list.forEach((ws) => {
+        fetch(ws, {
+          headers: {
+            "User-Agent": "Mirai WebServer",
+            "X-Validate-FP": hash,
+            "X-Token": token
+          }
+        })
+      });
+      globalTokens[hash] = { xsrf: token, time: now };
     }
     if (clearTokenList) {
       clearTimeout(clearTokenList);
