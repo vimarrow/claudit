@@ -284,6 +284,11 @@ const server = Bun.serve({
   },
   port: globalConfig.http_port.value,
   hostname: globalConfig.http_ip.value,
+  tls: globalConfig.tls.value === 'yes' ? {
+    cert: Bun.file(globalConfig.tls_cert.value),
+    key: Bun.file(globalConfig.tls_key.value),
+    ca: [Bun.file(globalConfig.tls_ca)]
+  } : undefined,
   error(error) {
     return new CustomResponse(`<pre>${error.message}\n${error.stack}</pre>`, {
       status: error.statusCode || 500,
