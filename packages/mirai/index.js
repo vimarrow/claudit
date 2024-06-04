@@ -170,14 +170,18 @@ const server = Bun.serve({
     if (!globalTokens[hash]?.xsrf || now - globalTokens[hash]?.time > 3600) {
       const token = randomUUID();
       const list = JSON.parse(globalConfig.peerServers.value);
-      list.forEach((ws) => {
-        fetch(ws, {
-          headers: {
-            "User-Agent": "Mirai WebServer",
-            "X-Validate-FP": hash,
-            "X-Token": token
-          }
-        })
+      list.forEach(async (ws) => {
+        try {
+          fetch(ws, {
+            headers: {
+              "User-Agent": "Mirai WebServer",
+              "X-Validate-FP": hash,
+              "X-Token": token
+            }
+          })
+        } catch(err) {
+          console.warn("Failed to sync with peerServers");
+        }
       });
       globalTokens[hash] = { xsrf: token, time: now };
     }
