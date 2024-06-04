@@ -40,89 +40,10 @@ function runTemplate(templateString, templateVars) {
 }
 
 const injectInitScript = (data, xsrf) => `<script type="text/javascript">
-class MiraiRegistry {
-  constructor(name, packages) {
-    this.name = name;
-    this._packages = {};
-    this._loaded = {};
-
-    this.init(packages);
-  }
-
-  init(packages) {
-    const instaLoad = packages.filter(({ loadRule }) => loadRule === "*");
-    Promise.allSettled(
-      instaLoad.map(({ location }) => import(location))
-    ).then((res) => {
-      res.forEach(({ status, value }, index) => {
-        const pkgName = instaLoad[index].name;
-        if (status !== "fulfilled") {
-          console.log("Loading '" + pkgName + "' package failed!");
-        }
-        this._loaded[pkgName] = value;
-      })
-    });
-    this._packages = packages.reduce((a, { name, loadRule, location }) => {
-      a[name] = {
-        loadRule,
-        location,
-        name
-      };
-      return a;
-    }, {});
-  }
-
-  get(name) {
-    if (this._loaded[name]) {
-      return this._loaded[name];
-    }
-    return null;
-  }
-
-  async getAsync(name) {
-    let sync = this.get(name);
-    if (sync !== null) {
-      return sync;
-    }
-    this._loaded[name] = await import(this._packages[name].location);
-    return this._loaded[name];
-  }
-}
-
-function miraiConfigParser(value, xsrf) {
-  try {
-    const rawObj = JSON.parse(value);
-    const obj = Object.keys(rawObj).reduce((acc, key) => {
-      const item = rawObj[key];
-      let value;
-      switch (item.type) {
-        case "str": {
-          value = String(item.value);
-          break;
-        }
-        case "fn": {
-          value = eval(item.value)();
-          break;
-        }
-        case "pkg": {
-          value = new MiraiRegistry(key, item.value);
-          break;
-        }
-        default: {
-          value = null;
-        }
-      }
-      acc[key] = value;
-      return acc;
-    }, {});
-    obj._xsrf = xsrf;
-    return obj;
-  } catch(err) {
-    console.error(err);
-  }
-}
-window.mirai = miraiConfigParser('${data}', '${xsrf}');
-</script>`;
+window.miraiRawConfig = '${data}';
+window.mirai-xsrf = '${xsrf}';
+</script>
+<script type="module" src="/mirai-shell.js"></script>`;
 
 const serveFile = async (path, cookieValue) => {
   const file = Bun.file(`./static/${path}`);
