@@ -74,7 +74,7 @@ function miraiConfigParser(value, xsrf) {
             const controller = item.value[i];
             if (controller.dependencies && controller.dependencies.length) {
               Promise.allSettled(
-                controller.dependencies.map((pkgName) => window.mirai.pkgRegistry.getAsync(pkgName))
+                controller.dependencies.map((pkgName) => acc.pkgRegistry.getAsync(pkgName))
               ).then(() => import(controller.location));
             } else {
               import(controller.location);
