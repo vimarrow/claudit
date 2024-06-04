@@ -41,7 +41,7 @@ function runTemplate(templateString, templateVars) {
 
 const injectInitScript = (data, xsrf) => `<script type="text/javascript">
 window.miraiRawConfig = '${data}';
-window.mirai-xsrf = '${xsrf}';
+window.miraiXsrf = '${xsrf}';
 </script>
 <script type="module" src="/mirai-shell.js"></script>`;
 

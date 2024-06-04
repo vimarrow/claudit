@@ -101,4 +101,4 @@ function miraiConfigParser(value, xsrf) {
   delete window.mirai-xsrf;
 }
 
-window.mirai = miraiConfigParser(window.miraiRawConfig, window.mirai-xsrf);
+window.mirai = miraiConfigParser(window.miraiRawConfig, window.miraiXsrf);
