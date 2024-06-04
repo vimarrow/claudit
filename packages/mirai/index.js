@@ -39,7 +39,7 @@ function runTemplate(templateString, templateVars) {
   return new Function('return `' + templateString + '`').call(templateVars)
 }
 
-const injectInitScript = (data, xsrf) => `<script type="text/javascript" type="module">
+const injectInitScript = (data, xsrf) => `<script type="text/javascript">
 class MiraiRegistry {
   constructor(name, packages) {
     this.name = name;
