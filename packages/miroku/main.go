@@ -4,6 +4,7 @@ import (
 	"expvar"
 	"flag"
 	"log"
+	"fmt"
 
 	"github.com/valyala/fasthttp"
 	"github.com/valyala/fasthttp/expvarhandler"
@@ -45,14 +46,19 @@ func main() {
     ip := ctx.RemoteIP().String()
     key := ua + "@" + ip
     token := string(ctx.Request.Header.Peek("X-Token"))
-    ctx.Response.Header.Set("Access-Control-Allow-Origin", "claudit.ro")
+    fmt.Println(key)
+    ctx.Response.Header.Set("Access-Control-Allow-Origin", "https://claudit.ro")
     ctx.Response.Header.Set("Access-Control-Allow-Methods", "OPTIONS,GET,POST,PUT,PATCH")
     ctx.Response.Header.Set("Access-Control-Allow-Headers", "X-Token,X-Validate-FP")
     ctx.Response.Header.Set("Access-Control-Max-Age", "86400")
-    if token == "" {
-      ctx.Error("Unauthorized", fasthttp.StatusUnauthorized)
+    if string(ctx.Method()) == "OPTIONS" {
+      ctx.SetStatusCode(fasthttp.StatusNoContent)
       return
     }
+    if token == "" {
+      fmt.Fprintf(ctx, "Unauthorized1")
+      ctx.SetStatusCode(fasthttp.StatusUnauthorized)
+    } else {
 		switch string(ctx.Path()) {
 		case "/stats":
 		  if ua == "Mirai WebServer" && ip == "198.244.190.162" {
@@ -62,13 +68,15 @@ func main() {
 			expvarhandler.ExpvarHandler(ctx)
 		default:
 		  if sessions[key] != token {
-        ctx.Error("Unauthorized", fasthttp.StatusUnauthorized)
-        return
+        fmt.Fprintf(ctx, "Unauthorized2")
+	ctx.SetStatusCode(fasthttp.StatusUnauthorized)
+	break
       }
 			fsHandler(ctx)
 			updateFSCounters(ctx)
 		}
-	}
+    }
+}
 
 	if len(*addr) > 0 {
 		log.Printf("Starting HTTP server on %q", *addr)
