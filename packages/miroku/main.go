@@ -10,14 +10,14 @@ import (
 )
 
 var (
-	addr               = flag.String("addr", "localhost:8080", "TCP address to listen to")
+	addr               = flag.String("addr", "", "TCP address to listen to")
 	addrTLS            = flag.String("addrTLS", "", "TCP address to listen to TLS (aka SSL or HTTPS) requests. Leave empty for disabling TLS")
 	byteRange          = flag.Bool("byteRange", true, "Enables byte range requests if set to true")
-	certFile           = flag.String("certFile", "./ssl-cert.pem", "Path to TLS certificate file")
+	certFile           = flag.String("certFile", "", "Path to TLS certificate file")
 	compress           = flag.Bool("compress", false, "Enables transparent response compression if set to true")
 	dir                = flag.String("dir", "/mnt", "Directory to serve static files from")
 	generateIndexPages = flag.Bool("generateIndexPages", true, "Whether to generate directory index pages")
-	keyFile            = flag.String("keyFile", "./ssl-cert.key", "Path to TLS key file")
+	keyFile            = flag.String("keyFile", "", "Path to TLS key file")
 	vhost              = flag.Bool("vhost", false, "Enables virtual hosting by prepending the requested path with the requested hostname")
 )
 
@@ -38,13 +38,17 @@ func main() {
 
   sessions := make(map[string]string)
 
-  sessions["PostmanRuntime/7.38.0@127.0.0.1"] = "1234";
+  sessions["PostmanRuntime/7.32.2@79.112.1.1"] = "1234";
 
   requestHandler := func(ctx *fasthttp.RequestCtx) {
     ua := string(ctx.Request.Header.UserAgent())
     ip := ctx.RemoteIP().String()
     key := ua + "@" + ip
     token := string(ctx.Request.Header.Peek("X-Token"))
+    ctx.Response.Header.Set("Access-Control-Allow-Origin", "claudit.ro")
+    ctx.Response.Header.Set("Access-Control-Allow-Methods", "OPTIONS,GET,POST,PUT,PATCH")
+    ctx.Response.Header.Set("Access-Control-Allow-Headers", "X-Token,X-Validate-FP")
+    ctx.Response.Header.Set("Access-Control-Max-Age", "86400")
     if token == "" {
       ctx.Error("Unauthorized", fasthttp.StatusUnauthorized)
       return
