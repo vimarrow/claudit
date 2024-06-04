@@ -1,16 +1,32 @@
-import { adoptStyles, LitElement } from "lit";
+const { adoptStyles, LitElement } = window.mirai.pkgRegistry.get('lit');
 
-export class VxElement extends LitElement {
-  connectedCallback() {
-    super.connectedCallback();
+export function VxElement(subjects) {
+  return class extends LitElement {
+    connectedCallback() {
+      super.connectedCallback();
 
-    const prototype = Object.getPrototypeOf(this);
-    Object.values(Object.getOwnPropertyNames(prototype)).forEach((propKey) => {
-      console.log(propKey, this[propKey], Object.getOwnPropertyDescriptor(prototype, propKey).get?.());
-    });
+      this._subscribers = {};
 
-    setTimeout(() => {
-      adoptStyles(this.shadowRoot, document.adoptedStyleSheets);
-    }, 50);
+      Object.keys(subjects).forEach((key) => {
+        this._subscribers[key] = subjects[key]?.subscribe((newValue) => {
+          this.stateChanged(key, newValue);
+        })
+      });
+
+      setTimeout(() => {
+        adoptStyles(this.shadowRoot, document.adoptedStyleSheets);
+      }, 50);
+    }
+
+    stateChanged(key, val) {
+      console.log(`Unhandled change for ${key}`);
+    }
+
+    disconnectedCallback() {
+      Object.values(this._subscribers).forEach((sub) => {
+        sub?.unsubscribe();
+      });
+      super.disconnectedCallback();
+    }
   }
 }
