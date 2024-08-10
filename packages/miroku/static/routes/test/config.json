@@ -1,0 +1,36 @@
+{
+  "server": [
+    {
+      "key": "computed",
+      "compute": "ssrGetQueryParam",
+      "value": 21
+    },
+    {
+      "key": "static",
+      "value": "Hello world!"
+    }
+  ],
+  "client": {
+    "registry": [
+      {
+        "type": "lib",
+        "name": "lit",
+        "location": "https://cdn.jsdelivr.net/npm/lit@3/+esm",
+        "loadRule": "*"
+      }
+    ],
+    "config": [
+      {
+        "type": "raw",
+        "key": "someRawVal",
+        "compute": "getDbValue",
+        "value": "hello from DB"
+      },
+      {
+        "type": "fn",
+        "key": "static",
+        "value": "console.log('something to display here')"
+      }
+    ]
+  }
+}

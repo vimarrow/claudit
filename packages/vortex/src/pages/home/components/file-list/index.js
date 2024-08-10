@@ -1,7 +1,8 @@
-import { VxElement } from '../../../../utils/vx-element';
+import { VxElement, folderSvg } from '../../../../utils/vx-element';
 import { FileListStore } from '../../store/file-list';
 
 const { html, css } = window.mirai.pkgRegistry.get('lit');
+const { getIcon } = window.mirai.pkgRegistry.get('ft-icons');
 
 const fls = new FileListStore();
 
@@ -11,7 +12,27 @@ class FileList extends VxElement({ listData: fls.fileListSubject }) {
   static styles = [
     css`
       ul.file-list {
-        list-style-type: none;
+        list-style: none;
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        padding-inline-start: 8px;
+      }
+      li.elem {
+        cursor: pointer;
+        display: flex;
+        gap: 4px;
+        font-size: 1.5em;
+        padding: 8px;
+        align-items: center;
+      }
+      li.elem:hover {
+        background-color: rgba(0, 0, 0, .05);
+      }
+      li.elem > span {
+        display: block;
+        width: 32px;
+        height: 32px;
       }
     `
   ]
@@ -68,15 +89,27 @@ class FileList extends VxElement({ listData: fls.fileListSubject }) {
     }
   }
 
+  renderDir(path) {
+    return html`<li class="elem is-dir" @click=${path !== ".." ? this.upPath(path) : this.downPath}>${folderSvg}${path}</li>`;
+  }
+
+  renderFile(path) {
+    const { svg: svgVal } = getIcon(path);
+    const iconWrap = document.createElement('span');
+    iconWrap.innerHTML = svgVal;
+    return html`<li class="elem is-file" @click=${this.download(path)}>${iconWrap}${path}</li>`;
+  }
+
   render() {
-    return html`<div>
-      <p>Current path: ${this.currentDir}</p>
-      <ul class="file-list">
-        ${this.listData.map(({ isDir, path }) => isDir ? html`
-          <li @click=${path !== ".." ? this.upPath(path) : this.downPath}>${path}</li>
-        ` : html`<li @click=${this.download(path)}>${path}</li>`)}
-      </ul>
-    </div>`;
+    return html`
+      <div>
+        <p>Current path: ${this.currentDir}</p>
+        <ul class="file-list">
+          ${this.listData.map(({ isDir, path }) => isDir ? 
+            this.renderDir(path) : this.renderFile(path)
+          )}
+        </ul>
+      </div>`;
   }
 }
 

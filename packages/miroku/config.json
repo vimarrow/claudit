@@ -1,0 +1,23 @@
+{
+  "http_ip": "127.0.0.1",
+  "http_port": 3000,
+  "domain": "localhost",
+  "ssl": {
+    "enabled": false,
+    "key": "/",
+    "cert": "/"
+  },
+  "public_url": "http://localhost:3000",
+  "routes": [
+    {
+      "path": "/test",
+      "name": "test",
+      "imports": "serverFunctions",
+      "template": "sample"
+    },
+    {
+      "path": "/products/:category/:product?",
+      "name": "products"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "name": "miroku",
+  "version": "1.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "bun run --watch src/index.js"
+  },
+  "dependencies": {
+    "@chneau/elysia-compression": "^1.0.6",
+    "@elysiajs/cors": "^1.1.0",
+    "@elysiajs/server-timing": "^1.1.0",
+    "@elysiajs/static": "^1.1.0",
+    "elysia": "latest",
+    "elysia-compression": "^0.0.7",
+    "elysia-ip": "^1.0.7",
+    "elysia-rate-limit": "^4.1.0",
+    "iovalkey": "^0.1.0"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "module": "src/index.js"
+}

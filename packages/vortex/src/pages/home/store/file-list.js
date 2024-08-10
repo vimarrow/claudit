@@ -37,8 +37,10 @@ export class FileListStore { // extends BaseStore?
         const parser = new DOMParser();
         const doc = parser.parseFromString(text, "text/html");
         const list = [];
-        doc.body.querySelectorAll("li > a").forEach((element) => {
-          list.push({ isDir: element.classList.contains("dir"), path: element.innerHTML });
+        doc.body.querySelectorAll("li").forEach((parrent) => {
+          const element = parrent.querySelector("a");
+          const data = parrent.innerText;
+          list.push({ isDir: element.classList.contains("dir"), path: element.innerHTML, info: data });
         });
         return list;
       });
